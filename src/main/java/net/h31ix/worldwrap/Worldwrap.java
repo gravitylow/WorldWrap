@@ -8,12 +8,11 @@ import org.bukkit.util.config.Configuration;
 public class Worldwrap extends JavaPlugin {
     
     private Configuration config;
-    private WorldwrapPlayerListener playerListener = new WorldwrapPlayerListener(this);
+    private WorldwrapPlayerListener playerListener = new WorldwrapPlayerListener(this);               
     File configFile = new File("plugins/WorldWrap/config.yml");
     public static Worldwrap plugin;
     
     public void onDisable() {
-        // TODO: Place any custom disable code here.
         System.out.println(this + " is now disabled!");
     }
 
@@ -40,13 +39,22 @@ public void makeConfig() {
     //Set all the config defaults, if they are not already set.
     if (configFile.length()==0) {
         config.setHeader("#World Wrap configuration file");
-        config.setProperty("Teleport Settings.Teleport Height", "-5");
-        config.setProperty("Teleport Settings.Randomness of drop", "20");
-        config.setProperty("Teleport Settings.Drop height", "128");
-        config.setProperty("Teleport Settings.Drop world name", "world");
-        config.setProperty("Teleport Settings.Teleport to spawn", "false");
-        config.setProperty("Message Settings.Send message", "false");
-        config.setProperty("Message Settings.Message", "Woosh!");
+        config.setProperty("Teleportation Options.Teleport on y", "true");
+        config.setProperty("Teleportation Options.Teleport on x/z", "false");
+        config.setProperty("Y Teleportation.Bottom of the world", "-5");
+        config.setProperty("Y Teleportation.Randomness of drop", "20");
+        config.setProperty("Y Teleportation.Drop height", "128");
+        config.setProperty("X/Y Teleportation.Radius of world", "128");
+        config.setProperty("General Settings.Teleport to spawn", "false");
+        config.setProperty("General Settings.Teleport to coordinates", "false");  
+        config.setProperty("General Settings.Teleport to world", "world");
+        config.setProperty("Teleport to coordinate settings.X teleport coordinate", "0");   
+        config.setProperty("Teleport to coordinate settings.Y teleport coordinate", "0"); 
+        config.setProperty("Teleport to coordinate settings.Z teleport coordinate", "0"); 
+        config.setProperty("Message Settings.Send Drop Message", "false");
+        config.setProperty("Message Settings.Send Edge Message", "false");        
+        config.setProperty("Message Settings.Drop Message", "Woosh!");
+        config.setProperty("Message Settings.Edge Message", "You have reached the edge of the world!");        
         config.save(); 		
 	}
     }    
