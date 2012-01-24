@@ -3,7 +3,10 @@ package net.h31ix.worldwrap;
 import java.util.Random;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -23,177 +26,187 @@ public class WorldwrapPlayerListener extends PlayerListener {
         config = plugin.getConfiguration();
         Player player = event.getPlayer();
         
-        if (config.getString("Teleportation Options.Teleport on y").equalsIgnoreCase("true"))
+        if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Teleportation Options.Sync Bottom")) == true)
         {
         int height=player.getLocation().getBlockY();
-        int allowedheight = Integer.parseInt(config.getString("Y Teleportation.Bottom of the world"));
-        if (height<allowedheight)
+        int allowedheight = Integer.parseInt(config.getString(player.getWorld().getName()+".Bottom Settings.Bottom of the world"));
+        if (height<=allowedheight)
             {
-            if (config.getString("General Settings.Teleport to spawn").equalsIgnoreCase("true"))
+            if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".General Settings.Teleport to spawn")) == true)
             {
                 Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
                 player.teleport(loc);
             }
-            else if (config.getString("General Settings.Teleport to coordinates").equalsIgnoreCase("true"))
+            else if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".General Settings.Teleport to coordinates")) == true)
             {
-                int x = Integer.parseInt(config.getString("Teleport to coordinate settings.X teleport coordinate"));
-                int y = Integer.parseInt(config.getString("Teleport to coordinate settings.Y teleport coordinate"));
-                int z = Integer.parseInt(config.getString("Teleport to coordinate settings.Z teleport coordinate"));
-                World world = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
+                int x = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.X teleport coordinate"));
+                int y = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.Y teleport coordinate"));
+                int z = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.Z teleport coordinate"));
+                World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".General Settings.Teleport to world"));
                 Location loc = new Location(world, x, y, z);
                 player.teleport(loc);
             }
             else
             {
             Random randomGenerator = new Random();
-            int x = randomGenerator.nextInt(Integer.parseInt(config.getString("Y Teleportation.Randomness of drop")));
-            int z = randomGenerator.nextInt(Integer.parseInt(config.getString("Y Teleportation.Randomness of drop")));
-            World world = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
+            int x = randomGenerator.nextInt(Integer.parseInt(config.getString(player.getWorld().getName()+".Bottom Settings.Randomness of teleport")));
+            int z = randomGenerator.nextInt(Integer.parseInt(config.getString(player.getWorld().getName()+".Bottom Settings.Randomness of teleport")));
+            World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".General Settings.Teleport to world"));
             int op1 = randomGenerator.nextInt(4);
             if (op1 == 1)
                 x = x - (x*2);
             if (op1 == 2)
                 z = z - (z*2);  
-            Location t = new Location (world, player.getLocation().getX(), 128, player.getLocation().getZ());
+            Location t = new Location (world, player.getLocation().getX(), Integer.parseInt(config.getString(player.getWorld().getName()+".Bottom Settings.Teleport height")), player.getLocation().getZ());
             Location f = t.add(x, 0, z);
+            player.teleport(f);         
+            if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Bottom Settings.Place onto glass")) == true)
+            {
+                final Location d = player.getLocation().add(0, -2, 0);
+                d.getBlock().setType(Material.GLASS);
+                if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Bottom Settings.Delete glass after 30 seconds")) == true)
+                {
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                            if (d.getBlock().getType() == Material.GLASS)
+                            {
+                            d.getBlock().setType(Material.AIR);
+                            }
+                        }
+                    }, 600L);                    
+                }
+            }            
+            }
+            if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Message Settings.Send Bottom Message")) == true)
+            {
+                player.sendMessage(ChatColor.BLUE+config.getString(player.getWorld().getName()+".Message Settings.Bottom Message"));
+            }            
+            }
+        } 
+        
+        if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Teleportation Options.Sync Top")) == true)
+        {
+        int height=player.getLocation().getBlockY();
+        int allowedheight = Integer.parseInt(config.getString(player.getWorld().getName()+".Top Settings.Top of the world"));
+        if (height>=allowedheight)
+            {
+            if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".General Settings.Teleport to spawn")) == true)
+            {
+                Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
+                player.teleport(loc);
+            }
+            else if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".General Settings.Teleport to coordinates")) == true)
+            {
+                int x = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.X teleport coordinate"));
+                int y = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.Y teleport coordinate"));
+                int z = Integer.parseInt(config.getString(player.getWorld().getName()+".Teleport to coordinate settings.Z teleport coordinate"));
+                World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".General Settings.Teleport to world"));
+                Location loc = new Location(world, x, y, z);
+                player.teleport(loc);
+            }
+            else
+            {
+            Random randomGenerator = new Random();
+            int x = randomGenerator.nextInt(Integer.parseInt(config.getString(player.getWorld().getName()+".Top Settings.Randomness of teleport")));
+            int z = randomGenerator.nextInt(Integer.parseInt(config.getString(player.getWorld().getName()+".Bottom Settings.Randomness of teleport")));
+            World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".General Settings.Teleport to world"));
+            int op1 = randomGenerator.nextInt(4);
+            if (op1 == 1)
+                x = x - (x*2);
+            if (op1 == 2)
+                z = z - (z*2);  
+            Location t = new Location (world, player.getLocation().getX(), Integer.parseInt(config.getString(player.getWorld().getName()+".Top Settings.Teleport Depth")), player.getLocation().getZ());
+            Location f = t.add(x, 0, z);
+            f.getBlock().setType(Material.AIR);
+            Block b = f.getBlock().getFace(BlockFace.UP);
+            Block j = b.getFace(BlockFace.DOWN);
+            b.setType(Material.AIR);
+            b.getFace(BlockFace.EAST).setType(Material.AIR);
+            b.getFace(BlockFace.NORTH).setType(Material.AIR);
+            b.getFace(BlockFace.SOUTH).setType(Material.AIR);
+            b.getFace(BlockFace.WEST).setType(Material.AIR);
+            b.getFace(BlockFace.NORTH_EAST).setType(Material.TORCH);
+            b.getFace(BlockFace.NORTH_WEST).setType(Material.AIR);
+            b.getFace(BlockFace.SOUTH_EAST).setType(Material.AIR);
+            b.getFace(BlockFace.SOUTH_WEST).setType(Material.AIR);
+            j.setType(Material.AIR);
+            j.getFace(BlockFace.EAST).setType(Material.AIR);
+            j.getFace(BlockFace.NORTH).setType(Material.AIR);
+            j.getFace(BlockFace.SOUTH).setType(Material.AIR);
+            j.getFace(BlockFace.WEST).setType(Material.AIR);
+            j.getFace(BlockFace.NORTH_EAST).setType(Material.AIR);
+            j.getFace(BlockFace.NORTH_WEST).setType(Material.AIR);
+            j.getFace(BlockFace.SOUTH_EAST).setType(Material.AIR);
+            j.getFace(BlockFace.SOUTH_WEST).setType(Material.AIR);            
+            
             player.teleport(f);
             }
-            if (config.getString("Message Settings.Send Drop Message").equalsIgnoreCase("true"))
+            if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Message Settings.Send Top Message")) == true)
             {
-                player.sendMessage(ChatColor.BLUE+config.getString("Message Settings.Drop Message"));
+                player.sendMessage(ChatColor.BLUE+config.getString(player.getWorld().getName()+".Message Settings.Top Message"));
             }            
             }
-        }
+        }        
         
-        if (config.getString("Teleportation Options.Teleport on x/y").equalsIgnoreCase("true"))
+        if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Teleportation Options.Sync Edge")) == true)
         { 
-            boolean tp = false;
-            World world = player.getWorld();                                 
-                Location ploc = player.getLocation();
-                int x = (int)ploc.getX();
-                int z = (int)ploc.getZ();
+                boolean tp = false;
+                World world = player.getWorld();
+                int x = (int)player.getLocation().getX();
+                int y = (int)player.getLocation().getY();
+                int z = (int)player.getLocation().getZ();
                 
-                Location spawn = world.getSpawnLocation();
-                int sx = (int)spawn.getX();
-                int sz = (int)spawn.getZ();
+                float yaw = player.getLocation().getYaw();
+                float pitch = player.getLocation().getPitch();
                 
-                int radius = Integer.parseInt(config.getString("X/Y Teleportation.Radius of world"));
-                Location b = new Location (world, 0, player.getLocation().getY(), 0);
+                int sx = (int)player.getWorld().getSpawnLocation().getX();
+                int sz = (int)player.getWorld().getSpawnLocation().getX();
                 
-                System.out.println("Players x: "+x);
-                System.out.println("x Border: "+(sx+radius));
-                System.out.println("x Border: "+(sx-radius));
- 
-               
-                
-                if (x == sx+radius)
+                int radius = Integer.parseInt(config.getString(player.getWorld().getName()+".Edge Teleportation.Radius of world"));
+                if (x >= sx+radius)
                 {
-                    
-            if (config.getString("General Settings.Teleport to coordinates").equalsIgnoreCase("true"))
-            {
-                int x1 = Integer.parseInt(config.getString("Teleport to coordinate settings.X teleport coordinate"));
-                int y1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Y teleport coordinate"));
-                int z1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Z teleport coordinate"));
-                World w = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
-                Location loc = new Location(w, x1, y1, z1);
-                player.teleport(loc);
-            }
-            
-            else if (config.getString("General Settings.Teleport to spawn").equalsIgnoreCase("true"))
-            {
-                System.out.println("spawn");
-                Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
-                player.teleport(loc);
-            }            
-            else {
-                    Location to = new Location(world, sx-radius-3, player.getLocation().getY(), z);
-                    player.teleport(to);
-                }
-            tp = true;
-             }
-                if (x == sx-radius)
-                {
-                    
-            if (config.getString("General Settings.Teleport to coordinates").equalsIgnoreCase("true"))
-            {
-                int x1 = Integer.parseInt(config.getString("Teleport to coordinate settings.X teleport coordinate"));
-                int y1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Y teleport coordinate"));
-                int z1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Z teleport coordinate"));
-                World w = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
-                Location loc = new Location(w, x1, y1, z1);
-                player.teleport(loc);
-            }
-            
-            else if (config.getString("General Settings.Teleport to spawn").equalsIgnoreCase("true"))
-            {
-                System.out.println("spawn");
-                Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
-                player.teleport(loc);
-            }    
-            else {
-                    Location to = new Location(world, sx+radius+3, player.getLocation().getY(), z);
-                    player.teleport(to);                   
-                }
-            tp = true;
+                    Location l = new Location(world, sx-radius+3, plugin.findTop(world,sx-radius+3,z), z, yaw, pitch);
+                    /**world.getBlockAt(l).setType(Material.AIR);
+                    world.getBlockAt(l).getFace(BlockFace.UP).setType(Material.AIR);**/
+                    player.teleport(l);
+                    tp = true;
                 }
                 
-                if (z == sz+radius)
+                else if (x <= sx-radius)
                 {
-                    
-            if (config.getString("General Settings.Teleport to coordinates").equalsIgnoreCase("true"))
-            {
-                int x1 = Integer.parseInt(config.getString("Teleport to coordinate settings.X teleport coordinate"));
-                int y1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Y teleport coordinate"));
-                int z1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Z teleport coordinate"));
-                World w = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
-                Location loc = new Location(w, x1, y1, z1);
-                player.teleport(loc);
-            }
-            
-            else if (config.getString("General Settings.Teleport to spawn").equalsIgnoreCase("true"))
-            {
-                System.out.println("spawn");
-                Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
-                player.teleport(loc);
-            }      
-            else {
-            
-                    Location to = new Location(world, x, player.getLocation().getY(), sz-radius-3);
-                    player.teleport(to);
-            }
-            tp = true;
+                    Location l = new Location(world, sx+radius-3, plugin.findTop(world,sx+radius-3, z), z, yaw, pitch);
+                    //world.getBlockAt(l).setType(Material.AIR);
+                    //world.getBlockAt(l).getFace(BlockFace.UP).setType(Material.AIR); 
+                    player.teleport(l);                    
+                    tp = true;
                 }
-                if (z == sz-radius)
+                
+                else if (z >= sz+radius)
                 {
-                    
-            if (config.getString("General Settings.Teleport to coordinates").equalsIgnoreCase("true"))
-            {
-                int x1 = Integer.parseInt(config.getString("Teleport to coordinate settings.X teleport coordinate"));
-                int y1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Y teleport coordinate"));
-                int z1 = Integer.parseInt(config.getString("Teleport to coordinate settings.Z teleport coordinate"));
-                World w = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world"));
-                Location loc = new Location(w, x1, y1, z1);
-                player.teleport(loc);
-            }
-            
-            else if (config.getString("General Settings.Teleport to spawn").equalsIgnoreCase("true"))
-            {
-                System.out.println("spawn");
-                Location loc = plugin.getServer().getWorld(config.getString("General Settings.Teleport to world")).getSpawnLocation();
-                player.teleport(loc);
-            } 
-            else {
-            
-                    Location to = new Location(world, x, player.getLocation().getY(), z+radius+3);
-                    player.teleport(to);   
-            }
-            tp = true;
-                }               
-            if (config.getString("Message Settings.Send Edge Message").equalsIgnoreCase("true") && tp == true)
-            {
-                player.sendMessage(ChatColor.BLUE+config.getString("Message Settings.Edge Message"));
-                tp = false;
-            }            
+                    Location l = new Location(world, x, plugin.findTop(world,x, sz-radius+3), sz-radius+3, yaw, pitch);
+                    //world.getBlockAt(l).setType(Material.AIR);
+                    //world.getBlockAt(l).getFace(BlockFace.UP).setType(Material.AIR);
+                    player.teleport(l);
+                    tp = true;
+                }
+                
+                else if (z <= sz-radius)
+                {
+                    Location l = new Location(world, x, plugin.findTop(world,x, sz+radius-3), sz+radius-3, yaw, pitch);
+                    //world.getBlockAt(l).setType(Material.AIR);
+                    //world.getBlockAt(l).getFace(BlockFace.UP).setType(Material.AIR);
+                    player.teleport(l);
+                    tp = true;
+                }
+                
+                if (tp == true)
+                {
+                    if (Boolean.parseBoolean(config.getString(player.getWorld().getName()+".Message Settings.Send Edge Message")) == true)
+                    {
+                        player.sendMessage(ChatColor.BLUE+config.getString(player.getWorld().getName()+".Message Settings.Edge Message"));
+                    }    
+                    tp = false;
+                }
         }       
     }
 }
