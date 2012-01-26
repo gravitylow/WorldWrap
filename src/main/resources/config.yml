@@ -2,37 +2,35 @@
 #For each world you want to use with World Wrap, please copy the template below and replace "world" with the world's name 
 #Please consult http://dev.bukkit.org/server-mods/worldwrap/ for questions
 world:
-    #These settings are optional except for teleport to world
-    #You MUST fill out the world name that you want players to be teleported to when a teleport is triggered.
-    #If you would like other things like teleporting to a specified coordinate or to the world's spawn, you can enable that here
-    General Settings:
-        Teleport to coordinates: false
-        Teleport to world: world
-        Teleport to spawn: false
-    #Only fill this out if you put Teleport to coordinates to true
-    Teleport to coordinate settings:
-        Z teleport coordinate: 0
-        Y teleport coordinate: 0
-        X teleport coordinate: 0
-    #Round world feature, this is the amount of blocks you can travel from spawn
-    Edge Teleportation:
-        Radius of world: 128
+        
     #If you would like to have the player recieve a message when he/she is teleported, mess with these settings.
     Message Settings:
         Send Bottom Message: true
-        Send Edge Message: false
+        Send Edge Message: true
         Edge Message: You have reached the edge of the world!
         Bottom Message: Woosh!
         Top Message: Down you go!
         Send Top Message: true
+        
     #This is triggered when a player reaches the top of the world, and is teleported to the bottom (if Sync top is enabled below)
     Top Settings:
         #How far up a player can go before being teleported down
         Top of the world: 127
-        #How far down the player should be sent	
-        Teleport Depth: 5
+        
+        #Where should the player be sent when a teleport is triggered? Options are:
+        #Ground = into the ground, simulating a wrapped-world effect
+        #World = into the spawn of a new world
+        #Spawn = into the spawn of the user's world
+        Teleport method: ground
+        
+        #If ground, how far down the player should be sent?
+        Teleport depth: 5
+        #If world, which world should they be sent to?
+        World name: world
+
         #How randomly offset their teleport should be, set to 0 for no offset.	
         Randomness of teleport: 20
+        
     #This is triggered when a player reaches the bottom of the world, and is teleported to the top (if Sync bottom is enabled below)		
     Bottom Settings:
         #Instead of dropping the player, you can choose to have them placed on a piece of glass in the sky
@@ -41,11 +39,35 @@ world:
         Delete glass after 30 seconds: false
         #How far down a player can go before being teleported up	
         Bottom of the world: -5
-        #How far up the player should be sent		
-        #Remember that if you are also using Snyc top, this number should be UNDER the "Top of the world value" so that you aren't sent right back down again			
-        Teleport height: 126
+        
+        #Where should the player be sent when a teleport is triggered? Options are:
+        #Sky = into the sky, simulating a wrapped-world effect
+        #World = into the spawn of a new world
+        #Spawn = into the spawn of the user's world
+        Teleport method: sky
+        
+        #If sky, how far up the player should be sent?
+        Teleport height: 125
+        #If world, which world should they be sent to?
+        World name: world
+        
         #How randomly offset their teleport should be, set to 0 for no offset.		
         Randomness of teleport: 20
+        
+    #Round world feature, this is the amount of blocks you can travel from spawn
+    Edge Settings:
+        #How far from spawn can the user travel?
+        Radius of world: 128
+        
+        #Where should the player be sent when a teleport is triggered? Options are:
+        #Normal = simulate a round world, send them to the other side of the spawn's radius
+        #World = into the spawn of a new world
+        #Spawn = into the spawn of the user's world
+        Teleport method: normal
+        
+        #If world, which world should they be sent to?
+        World name: world       
+        
     #If something is not triggering right, it's probably an issue here.
     #Make sure all the events you want to use are set to true.	
     Teleportation Options:
@@ -53,5 +75,6 @@ world:
         Sync Top: true
         #Sync Bottom = place a player at the top of the world when they reach the bottom of it		
         Sync Bottom: true
-        #Sync Edge = round world. If a player ventures too far from spawn they are teleported to the other side of the spawn's allowed radius.		
+        #Sync Edge = round world. If a player ventures too far from spawn they are teleported to the other side of the spawn's allowed radius.
+        #Keep in mind if you enable this on a map where users are already very far from spawn bad things can happen, aka them getting forced from their house into your border.
         Sync Edge: false
