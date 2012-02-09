@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Location;
@@ -14,6 +17,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Worldwrap extends JavaPlugin {
@@ -22,6 +27,7 @@ public class Worldwrap extends JavaPlugin {
     File configFile = new File("plugins/WorldWrap/config.yml");
     public static Worldwrap plugin;
     public boolean updated = true;
+    Map <Entity, Location> mobloc = new HashMap<Entity, Location>();
     
     public void onDisable() {
         System.out.println(this + " is now disabled!");
@@ -30,13 +36,14 @@ public class Worldwrap extends JavaPlugin {
     public void onEnable() {
     config = this.getConfig();
     getServer().getPluginManager().registerEvents(new WorldwrapPlayerListener(this), this);
-    new File("plugins/NAS").mkdir();
+    getServer().getPluginManager().registerEvents(new WorldwrapEntityMoveListener(this), this);
+    new File("plugins/WorldWrap").mkdir();
 		if(!configFile.exists()) {
                     saveDefaultConfig();
                 }
-                if (config.get("General Settings.Teleport to coordinates") != null)
+                if (config.get("General Settings.Mobs follow rules") == null)
                 {
-                    System.out.println("Your config file is outdated. Renaming and replacing it.");
+                    System.out.println("[WorldWrap] Your config file is outdated. Renaming and replacing it.");
                     File f = new File("plugins/WorldWrap/config_old.yml");
                     if (f.exists())
                     {
@@ -50,6 +57,23 @@ public class Worldwrap extends JavaPlugin {
             updated = false;
             Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "WORLD WRAP IS OUT OF DATE.");
             Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "PLEASE UPDATE BY DOWNLOADING THE LATEST VERSION OF WORLD WRAP");
+        }
+        if (config.getBoolean("General Settings.Experimental rules") == true)
+        {        
+            Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "[WorldWrap] Experimental rules are ON please turn it to FALSE in the config if you are not 100% sure of what you are doing.");
+            List<World> worlds = getServer().getWorlds();
+            for (int i=0;i!=worlds.size();i++)
+            {
+                List <Entity> l = worlds.get(i).getEntities();
+                for (int o =0;o!=l.size();o++)
+                {
+                    if (!(l.get(o) instanceof Player))
+                    {
+                        mobloc.put(l.get(o), l.get(o).getLocation());
+                    }
+                }
+                new MobWatcher(mobloc, this, l).Start();
+            }
         }
         System.out.println(this + " is now enabled!");
     }

@@ -46,8 +46,16 @@ public class WorldwrapPlayerListener implements Listener {
             {
                 if (method.equalsIgnoreCase("world"))
                 {
+                        Location loc;
                         World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".Bottom Settings.World name"));
-                        Location loc = new Location(world, world.getSpawnLocation().getX(), world.getSpawnLocation().getY()+3, world.getSpawnLocation().getZ());
+                        if (config.getBoolean(player.getWorld().getName()+".Bottom Settings.Keep coordinates") == false)
+                        {
+                            loc = new Location(world, world.getSpawnLocation().getX(), world.getSpawnLocation().getY()+3, world.getSpawnLocation().getZ());
+                        }
+                        else
+                        {
+                            loc = new Location(world, player.getLocation().getX(), plugin.findTop(world,player.getLocation().getX(),player.getLocation().getZ()), player.getLocation().getZ());   
+                        }
                         player.teleport(loc);
                 }
                 else if (method.equalsIgnoreCase("spawn"))
@@ -56,18 +64,21 @@ public class WorldwrapPlayerListener implements Listener {
                 }
                 else if (method.equalsIgnoreCase("sky"))
                 {
-                    Random randomGenerator = new Random();
-                    int x = randomGenerator.nextInt(config.getInt(player.getWorld().getName()+".Bottom Settings.Randomness of teleport"));
-                    int z = randomGenerator.nextInt(config.getInt(player.getWorld().getName()+".Bottom Settings.Randomness of teleport"));
                     World world = player.getWorld();
+                    Location t = new Location (world, player.getLocation().getX(), config.getInt(world.getName()+".Bottom Settings.Teleport height"), player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
+                    if (config.getInt(world.getName()+".Bottom Settings.Randomness of teleport") != 0)
+                    {
+                    Random randomGenerator = new Random();
+                    int x = randomGenerator.nextInt(config.getInt(world.getName()+".Bottom Settings.Randomness of teleport"));
+                    int z = randomGenerator.nextInt(config.getInt(world.getName()+".Bottom Settings.Randomness of teleport"));
                     int op1 = randomGenerator.nextInt(4);
                     if (op1 == 1)
                         x = x - (x*2);
                     if (op1 == 2)
                         z = z - (z*2);  
-                    Location t = new Location (world, player.getLocation().getX(), config.getInt(player.getWorld().getName()+".Bottom Settings.Teleport height"), player.getLocation().getZ());
-                    Location f = t.add(x, 0, z);
-                    player.teleport(f);         
+                    t.add(x, 0, z);
+                    }
+                    player.teleport(t);         
                     if (config.getBoolean(player.getWorld().getName()+".Bottom Settings.Place onto glass") == true)
                     {
                         final Location d = player.getLocation().add(0, -2, 0);
@@ -102,7 +113,15 @@ public class WorldwrapPlayerListener implements Listener {
                     if (method.equalsIgnoreCase("world"))
                     {
                         World world = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".Top Settings.World name"));
-                        Location loc = new Location(world, world.getSpawnLocation().getX(), world.getSpawnLocation().getY()+3, world.getSpawnLocation().getZ());
+                        Location loc;
+                        if (config.getBoolean(player.getWorld().getName()+".Top Settings.Keep coordinates") == false)
+                        {
+                            loc = new Location(world, world.getSpawnLocation().getX(), world.getSpawnLocation().getY()+3, world.getSpawnLocation().getZ());
+                        }
+                        else
+                        {
+                            loc = new Location(world, player.getLocation().getX(), plugin.findTop(world,player.getLocation().getX(),player.getLocation().getZ()), player.getLocation().getZ());   
+                        }
                         player.teleport(loc);
                     }
                     else if (method.equalsIgnoreCase("spawn"))
@@ -111,19 +130,22 @@ public class WorldwrapPlayerListener implements Listener {
                     }
                     else if (method.equalsIgnoreCase("ground"))
                     {
+                    World world = player.getWorld();
+                        Location t = new Location (world, player.getLocation().getX(), config.getInt(world.getName()+".Top Settings.Teleport depth"), player.getLocation().getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
+                        if (config.getInt(world.getName()+".TopSettings.Randomness of teleport") != 0)
+                        {
                         Random randomGenerator = new Random();
-                        int x = randomGenerator.nextInt(config.getInt(player.getWorld().getName()+".Top Settings.Randomness of teleport"));
-                        int z = randomGenerator.nextInt(config.getInt(player.getWorld().getName()+".Top Settings.Randomness of teleport"));
-                        World world = player.getWorld();
+                        int x = randomGenerator.nextInt(config.getInt(world.getName()+".Top Settings.Randomness of teleport"));
+                        int z = randomGenerator.nextInt(config.getInt(world.getName()+".Top Settings.Randomness of teleport"));
                         int op1 = randomGenerator.nextInt(4);
                         if (op1 == 1)
                             x = x - (x*2);
                         if (op1 == 2)
                             z = z - (z*2);  
-                        Location t = new Location (world, player.getLocation().getX(), config.getInt(player.getWorld().getName()+".Top Settings.Teleport depth"), player.getLocation().getZ());
-                        Location f = t.add(x, 0, z);
-                        f.getBlock().setType(Material.AIR);
-                        Block b = f.getBlock().getFace(BlockFace.UP);
+                        t.add(x, 0, z);
+                        }                            
+                        t.getBlock().setType(Material.AIR);
+                        Block b = t.getBlock().getFace(BlockFace.UP);
                         Block j = b.getFace(BlockFace.DOWN);
                         b.setType(Material.AIR);
                         b.getFace(BlockFace.EAST).setType(Material.AIR);
@@ -144,7 +166,7 @@ public class WorldwrapPlayerListener implements Listener {
                         j.getFace(BlockFace.SOUTH_EAST).setType(Material.AIR);
                         j.getFace(BlockFace.SOUTH_WEST).setType(Material.AIR);            
 
-                        player.teleport(f);
+                        player.teleport(t);
                     }
                     if (config.getBoolean(player.getWorld().getName()+".Message Settings.Send Top Message") == true)
                     {
@@ -158,7 +180,6 @@ public class WorldwrapPlayerListener implements Listener {
                 boolean tp = false;
                 World world = player.getWorld();
                 int x = (int)player.getLocation().getX();
-                int y = (int)player.getLocation().getY();
                 int z = (int)player.getLocation().getZ();
                 
                 float yaw = player.getLocation().getYaw();
@@ -174,7 +195,15 @@ public class WorldwrapPlayerListener implements Listener {
                     if (method.equalsIgnoreCase("world"))       
                     {
                         World w = plugin.getServer().getWorld(config.getString(player.getWorld().getName()+".Edge Settings.World name"));
-                        Location loc = new Location(w, w.getSpawnLocation().getX(), w.getSpawnLocation().getY()+3, w.getSpawnLocation().getZ());
+                        Location loc;
+                        if (config.getBoolean(player.getWorld().getName()+".Top Settings.Keep coordinates") == false)
+                        {
+                            loc = new Location(w, w.getSpawnLocation().getX(), w.getSpawnLocation().getY()+3, w.getSpawnLocation().getZ());
+                        }
+                        else
+                        {
+                            loc = new Location(w, player.getLocation().getX(), plugin.findTop(w,player.getLocation().getX(),player.getLocation().getZ()), player.getLocation().getZ());   
+                        }                        
                         player.teleport(loc);                   
                     }
                     else if (method.equalsIgnoreCase("spawn"))
