@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +17,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Worldwrap extends JavaPlugin {
@@ -29,10 +27,12 @@ public class Worldwrap extends JavaPlugin {
     public boolean updated = true;
     Map <Entity, Location> mobloc = new HashMap<Entity, Location>();
     
+    @Override
     public void onDisable() {
         System.out.println(this + " is now disabled!");
     }
 
+    @Override
     public void onEnable() {
     config = this.getConfig();
     getServer().getPluginManager().registerEvents(new WorldwrapPlayerListener(this), this);
@@ -57,23 +57,6 @@ public class Worldwrap extends JavaPlugin {
             updated = false;
             Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "WORLD WRAP IS OUT OF DATE.");
             Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "PLEASE UPDATE BY DOWNLOADING THE LATEST VERSION OF WORLD WRAP");
-        }
-        if (config.getBoolean("General Settings.Experimental rules") == true)
-        {        
-            Logger.getLogger(Worldwrap.class.getName()).log(Level.WARNING, "[WorldWrap] Experimental rules are ON please turn it to FALSE in the config if you are not 100% sure of what you are doing.");
-            List<World> worlds = getServer().getWorlds();
-            for (int i=0;i!=worlds.size();i++)
-            {
-                List <Entity> l = worlds.get(i).getEntities();
-                for (int o =0;o!=l.size();o++)
-                {
-                    if (!(l.get(o) instanceof Player))
-                    {
-                        mobloc.put(l.get(o), l.get(o).getLocation());
-                    }
-                }
-                new MobWatcher(mobloc, this, l).Start();
-            }
         }
         System.out.println(this + " is now enabled!");
     }

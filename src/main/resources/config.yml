@@ -5,14 +5,7 @@
 General Settings:
     #Should mobs follow the same rules as players? (Note, this only works on bottom teleportation)
     Mobs follow rules: true
-    
-    #Do you want to use EXPERMINTAL mob rules? This allows mobs to follow top, bottom, and edge rules
-    #THERE IS A REASON THIS FALSE BY DEFAULT AND MARKED AS EXPERIMENTAL, Please, for the LOVE OF GOD, do not use this unless you have a blank map and feel like ruining it.
-    #While it does to pretty awesome stuff, it can and will do HORRIBLE things to your server if it is not powerful enough
-    #Or you have too many worlds loaded (even one is enough to lag out a normal server)
-    #This is for testing ONLY, please do not use it if you like your users and your map.
-    Experimental rules: false
-    
+
 ################
 #World-specific# 
 #Configuration #

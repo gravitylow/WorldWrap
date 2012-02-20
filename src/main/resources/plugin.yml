@@ -6,4 +6,4 @@ main: net.h31ix.worldwrap.Worldwrap
 name: WorldWrap
 startup: postworld
 url: http://H31IX.NET/
-version: '2.4'
+version: '2.5'

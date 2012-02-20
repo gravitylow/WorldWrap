@@ -36,7 +36,6 @@ public class WorldwrapPlayerListener implements Listener {
     {  
         config = plugin.getConfig();
         Player player = event.getPlayer();
-        
         if (config.getBoolean(player.getWorld().getName()+".Teleportation Options.Sync Bottom") == true)
         {
             String method = config.getString(player.getWorld().getName()+".Bottom Settings.Teleport method");
@@ -143,29 +142,28 @@ public class WorldwrapPlayerListener implements Listener {
                         if (op1 == 2)
                             z = z - (z*2);  
                         t.add(x, 0, z);
-                        }                            
+                        }             
                         t.getBlock().setType(Material.AIR);
-                        Block b = t.getBlock().getFace(BlockFace.UP);
-                        Block j = b.getFace(BlockFace.DOWN);
+                        Block b = t.getBlock().getRelative(BlockFace.UP);
+                        Block j = b.getRelative(BlockFace.DOWN);
                         b.setType(Material.AIR);
-                        b.getFace(BlockFace.EAST).setType(Material.AIR);
-                        b.getFace(BlockFace.NORTH).setType(Material.AIR);
-                        b.getFace(BlockFace.SOUTH).setType(Material.AIR);
-                        b.getFace(BlockFace.WEST).setType(Material.AIR);
-                        b.getFace(BlockFace.NORTH_EAST).setType(Material.TORCH);
-                        b.getFace(BlockFace.NORTH_WEST).setType(Material.AIR);
-                        b.getFace(BlockFace.SOUTH_EAST).setType(Material.AIR);
-                        b.getFace(BlockFace.SOUTH_WEST).setType(Material.AIR);
+                        b.getRelative(BlockFace.EAST).setType(Material.AIR);
+                        b.getRelative(BlockFace.NORTH).setType(Material.AIR);
+                        b.getRelative(BlockFace.SOUTH).setType(Material.AIR);
+                        b.getRelative(BlockFace.WEST).setType(Material.AIR);
+                        b.getRelative(BlockFace.NORTH_EAST).setType(Material.TORCH);
+                        b.getRelative(BlockFace.NORTH_WEST).setType(Material.AIR);
+                        b.getRelative(BlockFace.SOUTH_EAST).setType(Material.AIR);
+                        b.getRelative(BlockFace.SOUTH_WEST).setType(Material.AIR);
                         j.setType(Material.AIR);
-                        j.getFace(BlockFace.EAST).setType(Material.AIR);
-                        j.getFace(BlockFace.NORTH).setType(Material.AIR);
-                        j.getFace(BlockFace.SOUTH).setType(Material.AIR);
-                        j.getFace(BlockFace.WEST).setType(Material.AIR);
-                        j.getFace(BlockFace.NORTH_EAST).setType(Material.AIR);
-                        j.getFace(BlockFace.NORTH_WEST).setType(Material.AIR);
-                        j.getFace(BlockFace.SOUTH_EAST).setType(Material.AIR);
-                        j.getFace(BlockFace.SOUTH_WEST).setType(Material.AIR);            
-
+                        j.getRelative(BlockFace.EAST).setType(Material.AIR);
+                        j.getRelative(BlockFace.NORTH).setType(Material.AIR);
+                        j.getRelative(BlockFace.SOUTH).setType(Material.AIR);
+                        j.getRelative(BlockFace.WEST).setType(Material.AIR);
+                        j.getRelative(BlockFace.NORTH_EAST).setType(Material.AIR);
+                        j.getRelative(BlockFace.NORTH_WEST).setType(Material.AIR);
+                        j.getRelative(BlockFace.SOUTH_EAST).setType(Material.AIR);
+                        j.getRelative(BlockFace.SOUTH_WEST).setType(Material.AIR);     
                         player.teleport(t);
                     }
                     if (config.getBoolean(player.getWorld().getName()+".Message Settings.Send Top Message") == true)
